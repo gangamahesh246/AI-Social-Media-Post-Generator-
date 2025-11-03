@@ -4,13 +4,14 @@ import type { ChangeEvent } from "react";
 interface FormData {
   rawText: string;
   platforms: string[];
+  tone: string;
 }
 
 const HomePage: React.FC = () => {
-
   const [formData, setFormData] = useState<FormData>({
     rawText: "",
     platforms: [],
+    tone: "",
   });
   const [res, setRes] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -46,10 +47,14 @@ const HomePage: React.FC = () => {
           {
             parts: [
               {
-                text: `Generate creative social media posts from this raw text: "${formData.rawText}" for these platforms: ${formData.platforms.join(
+                text: `Generate creative social media posts from this raw text: 
+                "${
+                  formData.rawText
+                }" for these platforms: ${formData.platforms.join(
                   ", "
-                )}. Format the output as:
-                Platform: [Platform Name]
+                )} with a ${formData.tone || "neutral"} tone. 
+                Format the output as: 
+                Platform: [Platform Name] 
                 Post: [Generated post content]`,
               },
             ],
@@ -81,6 +86,13 @@ const HomePage: React.FC = () => {
     }
   };
 
+  const toneColors: Record<string, string> = {
+    Professional: "bg-blue-100 text-blue-700 border-blue-300",
+    Casual: "bg-gray-100 text-gray-700 border-gray-300",
+    Funny: "bg-orange-100 text-orange-700 border-orange-300",
+    Inspirational: "bg-green-100 text-green-700 border-green-300",
+  };
+  
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-6 flex flex-col items-center">
       <header className="text-center mb-8">
@@ -96,7 +108,7 @@ const HomePage: React.FC = () => {
       <form
         className="bg-white shadow-md rounded-2xl p-6 w-full max-w-2xl flex flex-col gap-5"
         onSubmit={(e) => {
-            e.preventDefault();
+          e.preventDefault();
         }}
       >
         <div>
@@ -120,7 +132,10 @@ const HomePage: React.FC = () => {
           </label>
           <div className="flex flex-wrap gap-4">
             {["Linkedin", "Instagram", "Twitter"].map((plat) => (
-              <label key={plat} className="flex items-center gap-2 text-gray-700">
+              <label
+                key={plat}
+                className="flex items-center gap-2 text-gray-700"
+              >
                 <input
                   type="checkbox"
                   value={plat}
@@ -132,6 +147,32 @@ const HomePage: React.FC = () => {
               </label>
             ))}
           </div>
+        </div>
+
+        <div>
+          <label className="font-medium block mb-2 text-gray-700">
+            Select Tone
+          </label>
+          <select
+            value={formData.tone}
+            onChange={(e) => setFormData({ ...formData, tone: e.target.value })}
+            className="border border-gray-300 rounded-lg p-2 w-full focus:ring-2 focus:ring-blue-500 outline-none"
+          >
+            <option value="">-- Choose Tone --</option>
+            <option value="Professional">Professional</option>
+            <option value="Casual">Casual</option>
+            <option value="Funny">Funny</option>
+            <option value="Inspirational">Inspirational</option>
+          </select>
+
+          {formData.tone && (
+            <div
+              className={`inline-block mt-3 px-3 py-1 rounded-full border text-sm font-medium transition-all ${toneColors[formData.tone]
+                }`}
+            >
+              {formData.tone} Tone Selected
+            </div>
+          )}
         </div>
 
         <button
